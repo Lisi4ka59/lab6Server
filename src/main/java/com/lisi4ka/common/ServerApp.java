@@ -30,7 +30,7 @@ public class ServerApp {
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.bind(new InetSocketAddress(host, 9856));
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            SelectionKey key = null;
+            SelectionKey key;
             while (true) {
                 if (selector.select() <= 0)
                     continue;
@@ -51,7 +51,7 @@ public class ServerApp {
                     boolean flag = true;
                     try {
                         sc.read(bb);
-                    } catch (SocketException ex) {
+                    } catch (SocketException | EOFException ex) {
                         sc.close();
                         flag = false;
                         System.out.print("Client close connection!\nServer will keep running\nTry running another client to re-establish connection\n");
@@ -59,16 +59,22 @@ public class ServerApp {
                     if (flag) {
                         String result = new String(bb.array()).trim();
                         byte[] data = Base64.getDecoder().decode(result);
-                        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-                        PackagedCommand packagedCommand = (PackagedCommand) ois.readObject();
-                        ois.close();
-                        String answer;
-                        if (packagedCommand.getCommandArguments() == null) {
-                            answer = invoker.run(packagedCommand.getCommandName());
-                        } else {
-                            answer = invoker.run(packagedCommand);
+                        PackagedCommand packagedCommand = null;
+                        try {
+                            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+                            packagedCommand = (PackagedCommand) ois.readObject();
+                            ois.close();
+                        } catch (EOFException ignored) {
                         }
-                        queue.add(answer);
+                        String answer;
+                        if (packagedCommand != null) {
+                            if (packagedCommand.getCommandArguments() == null) {
+                                answer = invoker.run(packagedCommand.getCommandName());
+                            } else {
+                                answer = invoker.run(packagedCommand);
+                            }
+                            queue.add(answer);
+                        }
                     }
                 }
                 if (key.isValid() && key.isWritable() && !queue.isEmpty()) {
