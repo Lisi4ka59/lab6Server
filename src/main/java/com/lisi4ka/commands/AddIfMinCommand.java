@@ -15,7 +15,13 @@ public class AddIfMinCommand implements Command{
     }
 
     public boolean addIfMin (City city) {
-        City minCity = collection.stream().min(new CityComparator()).get();
+        City minCity;
+        try {
+            minCity = collection.stream().min(new CityComparator()).get();
+        }catch (Exception ex){
+            collection.add(city);
+            return true;
+        }
         if (new CityComparator().compare(minCity, city) > 0) {
             collection.add(city);
             return true;

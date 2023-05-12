@@ -64,8 +64,7 @@ public class ServerApp {
                             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
                             packagedCommand = (PackagedCommand) ois.readObject();
                             ois.close();
-                        } catch (EOFException ignored) {
-                        }
+                        } catch (EOFException ignored) {}
                         String answer;
                         if (packagedCommand != null) {
                             if (packagedCommand.getCommandArguments() == null) {
