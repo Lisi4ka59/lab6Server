@@ -240,7 +240,7 @@ public class City implements Jsonable, Comparable<City> {
     }
     @Override
     public String toString(){
-        return String.format("Name: %s\nID: %d\nCreation date: %s\nCoordinates: %sStandard of living: %s\nGovernment: %s\nClimate: %s\nArea: %sPopulation: %d\nMeters above sea level: %d\nGovernor %s", getName(), getId(), getCreationDate(), getCoordinates(), getStandardOfLiving(), getGovernment(), getClimate(), getStringArea(), getPopulation(), getMetersAboveSeaLevel(), getGovernor());
+        return String.format("Name: %s\nID: %d\nCreation date: %s\nCoordinates: %sStandard of living: %s\nGovernment: %s\nClimate: %s\nArea: %sPopulation: %d\nMeters above sea level: %d\nGovernor %s", getName().replace("**", " "), getId(), getCreationDate(), getCoordinates(), getStandardOfLiving(), getGovernment(), getClimate(), getStringArea(), getPopulation(), getMetersAboveSeaLevel(), getGovernor());
     }
 
     @Override
